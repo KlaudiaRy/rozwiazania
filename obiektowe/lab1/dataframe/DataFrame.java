@@ -1,99 +1,182 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataFrame {
-    Kolumna[] kolumny;
-    int ilosc_wierszy;
+	int ilosc_wierszy;
+    String[] lista_nazw;
+    String[] lista_typow;
+    ArrayList<ArrayList> outer;
+    ArrayList kolumna;
 
-    public DataFrame(String[] nazwy, String[] typy) {
-        if (nazwy.length != typy.length) {
-        	throw new IllegalArgumentException("Niepoprawna ilosc wpisanych danych");
-        }
-        ilosc_wierszy = 0;        
-        kolumny = new Kolumna[nazwy.length];
-        for (int i = 0; i < nazwy.length; i++) {
-            kolumny[i] = new Kolumna(nazwy[i], typy[i]);
-        }
-    }
+	
+	 public void DataFrame(String[] lista_nazw, String[] lista_typow) {
+		 outer = new ArrayList<ArrayList>();
+		 ilosc_wierszy=0;
+		   for (int i=0; i< lista_nazw.length; i++) {
+			   ArrayList inner = new ArrayList();
+			   outer.add(inner);
+		   }
+	    }
+	 
+	 public DataFrame(String[] lista_nazw, String[] lista_typow) {
+	        this.lista_typow = lista_typow;
+	        this.lista_nazw = lista_nazw;
 
-    
-    public DataFrame(Kolumna[] kolumny) {
-        this.kolumny = kolumny;
-        ilosc_wierszy = kolumny[0].dane_w_kolumnie.size();
-    }
+	        DataFrame(lista_nazw, lista_typow);
+	    }
+	 
+	 public void dodaj(String nazwa_kolumny, Object dana) {
+		 for(int j = 0; j< lista_nazw.length;j++) {
+			 if (nazwa_kolumny == lista_nazw[j]) {
+				 if(sprawdzTyp(lista_typow[j],dana)) {
+					 outer.get(j).add(dana);
+					 ilosc_wierszy+=1;
+				 }
+			 }
+		 } 
+	 }
+	 
+	 public int size() {
+		 return ilosc_wierszy;
+	 }
+	 
+	 public ArrayList get(String colname) {
+		 for (int i = 0; i< lista_nazw.length; i++) {
+			 if (lista_nazw[i]==colname) {
+				 kolumna = outer.get(i);
+				 return kolumna;
+			 }
+		 }
+		 throw new IllegalArgumentException("Brak kolumny o podanej nazwie");
+	 }
+	 
+	 
+	  public DataFrame get(String[] cols,boolean copy){ 
+		  ArrayList<ArrayList> outer2;
+		  outer2 = new ArrayList<ArrayList>();
+		  if (copy) {
+			  for (int i=0; i< lista_nazw.length; i++) {
+				  for (int j =0; j<cols.length;j++) {
+					  if (lista_nazw[i]==cols[j]) {
+						   ArrayList inner = new ArrayList();
+						   inner = new ArrayList(outer.get(i));
+						   outer2.add(inner);
+					  }
+				  }
+			  }
+		  }else {			  
+			  for (int i=0; i< lista_nazw.length; i++) {
+				  for (int j =0; j<cols.length;j++) {
+					  if (lista_nazw[i]==cols[j]) {
+						   ArrayList inner = new ArrayList();
+						   inner = outer.get(i);
+						   outer2.add(inner);
+					  }
+				  }
+			  }
+	        }
+	        
+	        if (copy) {
+	        	System.out.println("wykonano kopiê g³êbok¹");
+	        }else {
+	        	System.out.println("wykonano kopiê p³ytk¹");
+	        }
+	        DataFrame df3 = new DataFrame(outer2);
+	        return df3;
+	    }
+	  
+	  	public DataFrame(ArrayList<ArrayList> kolumny) {
+	        this.outer = kolumny;
+	        ilosc_wierszy = outer.size();
+	    }
+	  	
+	  	
+	  	
+	  	public DataFrame iloc(int from,int to) {
+	        if (from<0 || from >= ilosc_wierszy || to<0 || to> ilosc_wierszy){
+	            throw new IndexOutOfBoundsException("Nie ma wierszy w zadanym zakresie");
+	        }
+	        if(to<from){
+	            int tmp;
+	            tmp= to;
+	            to = from;
+	            from = tmp;
+	            System.out.println("niepoprawna kolejnosc danych podczas podawania zakresu zostala automatycznie poprawiona");
+	        }
 
-    
-    public int size() {
-        return ilosc_wierszy; 
-    }
+	        String[] typy = new String [lista_nazw.length];
+	        String[] nazwy = new String [lista_nazw.length];
 
-    public Kolumna get(String colname) {
-        for (Kolumna i : kolumny) {
-            if (i.nazwa == colname) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException("Brak kolumny o podanej nazwie");
+	        for (int i=0;i<lista_nazw.length;i++){
+	            typy[i]= new String (lista_typow[i]);
+	            nazwy[i]=new String (lista_nazw[i]);
+	        }
 
-    }
-
-
-    public DataFrame iloc(int i){
-        return iloc(i,i);
-    }
-
-    public DataFrame get(String[] cols,boolean copy){ 
-        Kolumna[] nowe_kolumny = new Kolumna[cols.length];
-        for(int i=0; i<cols.length; i++) {
-            if (copy){
-                nowe_kolumny[i] = new Kolumna(get(cols[i]));
-                }
-            else {
-                nowe_kolumny[i] = get(cols[i]);
-                }
-        }
-        if (copy) {
-        	System.out.println("wykonano kopiê g³êbok¹");
-        }else {
-        	System.out.println("wykonano kopiê p³ytk¹");
-        }
-        DataFrame df3 = new DataFrame(nowe_kolumny);
-        return df3;
-    }
-    
-    public DataFrame iloc(int from,int to) {
-        if (from<0 || from >= ilosc_wierszy || to<0 || to> ilosc_wierszy){
-            throw new IndexOutOfBoundsException("Nie ma wierszy w zadanym zakresie");
-        }
-        if(to<from){
-            int tmp;
-            tmp= to;
-            to = from;
-            from = tmp;
-            System.out.println("niepoprawna kolejnosc danych podczas podawania zakresu zostala automatycznie poprawiona");
-        }
-
-        String[] typy = new String [kolumny.length];
-        String[] nazwy = new String [kolumny.length];
-
-        for (int i=0;i<kolumny.length;i++){
-            typy[i]= new String (kolumny[i].typ);
-            nazwy[i]=new String (kolumny[i].nazwa);
-        }
-
-        DataFrame df2 = new DataFrame(nazwy,typy);
-        Object[] nowe_dane = new Object[kolumny.length];
-
-        for (int i=from; i<to; i++){
-            for (Kolumna x: this.kolumny){
-                nowe_dane[i]=x.dane_w_kolumnie.get(i); //wybieranie danych z zakresu
-            }
-            for (int j=0; j<nowe_dane.length; j++){
-                    df2.kolumny[j].dane_w_kolumnie.add(nowe_dane[j]); //przypisywanie danych do nowej ramki 
-            }
-        }
-        return df2;
-    }
-       
+	        DataFrame df2 = new DataFrame(nazwy,typy);
+	        for (int j =0; j<lista_nazw.length;j++) {
+	        	for (int i=from; i<to; i++){
+	        		df2.outer.get(j).add((outer.get(j)).get(i));
+	        	}
+	        }
+	           
+	        return df2;
+	    }
+	  	
+	  	
+	  	
+	  public DataFrame iloc(int i){
+	       return iloc(i,i);
+	  }
+	  	
+	  	
+	  
+	 
+	 
+	 
+	 public boolean sprawdzTyp(String typ_danych, Object dana) {
+		 switch (typ_danych) {
+		 	case "bool":
+		     case "boolean":
+		     case "Boolean":
+		         return dana instanceof Boolean;
+		         
+		     case "byte":
+		     case "Byte":
+		         return dana instanceof Byte;
+		         
+		     case "char":
+		     case "character":
+		     case "Character":
+		         return dana instanceof Character; 
+		         
+		     case "double":
+		     case "Double":
+		         return dana instanceof Double;  
+		         
+		     case "float":
+		     case "Float":
+		         return dana instanceof Float; 
+		         
+		     case "int":
+		     case "integer":
+		     case "Integer":
+		         return dana instanceof Integer;
+		         
+		     case "long":
+		     case "Long":
+		         return dana instanceof Long;
+		         
+		     case "string":
+		     case "String":
+		         return dana instanceof String;
+		         
+		     default:
+		        System.out.println("nieznany typ danych");
+		        return false;
+		 }
+	 }
+	 
+	 
+	 
+	 
 }
-
-
