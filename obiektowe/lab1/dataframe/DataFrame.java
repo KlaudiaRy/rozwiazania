@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +33,8 @@ public class DataFrame {
 		 for(int j = 0; j< lista_nazw.length;j++) {
 			 if (nazwa_kolumny == lista_nazw[j]) {
 				 if(sprawdzTyp(lista_typow[j],dana)) {
-					 outer.get(j).add(dana);
-					 ilosc_wierszy+=1;
+					 outer.get(j).add(dana); 
+					 ilosc_wierszy = outer.get(1).size();
 				 }
 			 }
 		 } 
@@ -177,6 +181,64 @@ public class DataFrame {
 	 }
 	 
 	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 public void readingFromFileFunction(String path,boolean header) throws IOException {
+		    FileInputStream fstream = new FileInputStream(path);
+		    BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+		    String []strLine;
+
+		    
+		    
+		    if(header) 
+		    {
+		        strLine=br.readLine().split(",");
+		        for (int i = 0; i < lista_nazw.length; i++) {
+		            lista_nazw[i]=strLine[i];
+		        }
+		        
+		        DataFrame df = new DataFrame(lista_nazw, lista_typow );
+		        String tmp;
+		        Object[]wartosciZpliku =  new Object[lista_nazw.length];
+		        while(((tmp=br.readLine() )!= null)){
+		            strLine=tmp.split(",");
+		            int m=0;
+		            for(String wartosc:strLine){
+		            	wartosciZpliku[m] = wartosc;
+		            	for (int l = 0; l< lista_nazw.length;l++) {
+		            		df.dodaj(lista_nazw[l],wartosciZpliku[l]);
+		            	m++;	
+		            	}
+		            }
+		            //dodaj(lista_nazw[m],wartosciZpliku);
+		        }
+		    }
+		    br.close();
+		}
+
+		    public DataFrame(String path,String[] typy_kolumn) throws IOException{
+		        this(path,typy_kolumn,null);
+
+		    }
+		    public DataFrame(String path,String[] typy_kolumn, String[]nazwy_kolumn) throws IOException { 
+		        boolean header = nazwy_kolumn==null;
+		        for (int i =0; i<typy_kolumn.length;i++){
+		            if (!header){
+		                lista_nazw[i]=(nazwy_kolumn[i]);
+		            }
+		            else{
+		                continue;
+		            }
+		         readingFromFileFunction(path,header);
+		        }
+
+		    } 
 	 
 	 
 }
