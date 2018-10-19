@@ -353,7 +353,24 @@ public class SparseDataFrame extends DataFrame {
 			}
 
 	    
-	    
+		 public SparseDataFrame(String path,String[] typy_kolumn, Object hide) throws IOException{
+		        this(path,typy_kolumn,null,hide);
+
+		    }
+		    public SparseDataFrame(String path,String[] typy_kolumn, String[]nazwy_kolumn, Object hide) throws IOException { 
+		    	super(nazwy_kolumn,typy_kolumn);
+		        boolean header = nazwy_kolumn==null;
+		        for (int i =0; i<typy_kolumn.length;i++){
+		            if (!header){
+		                lista_nazw[i]=(nazwy_kolumn[i]);
+		            }
+		            else{
+		                continue;
+		            }
+		         readingFromFileFunction(path,header);
+		        }
+
+		    } 
 	  
 	    
 }
