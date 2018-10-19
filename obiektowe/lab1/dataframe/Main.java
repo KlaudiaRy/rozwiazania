@@ -4,19 +4,19 @@ import java.util.List;
 public class Main {
 
 	public static void main(String[] args) {
-		DataFrame tmp = new DataFrame(new String[]{"z","g","r"},new String []{"String","Integer","bool"});
-		tmp.dodaj("z", "abc");
-		tmp.dodaj("z", "def");
-		tmp.dodaj("g", 88);
-		tmp.dodaj("z", "abrakadabra");
-		tmp.dodaj("r",  true);
-		tmp.dodaj("g", 88);
-		tmp.dodaj("z", "abrakadabra");
-		tmp.dodaj("r",  true);
-		tmp.dodaj("r",  false);
-		tmp.dodaj("g", 111);
-		tmp.dodaj("r",  false);
-		tmp.dodaj("g", 112);
+		DataFrame tmp = new DataFrame(new String[]{"a","b","c"},new String []{"String","Integer","bool"});
+		tmp.dodaj("a", "abc");
+		tmp.dodaj("a", "def");
+		tmp.dodaj("b", 88);
+		tmp.dodaj("a", "abrakadabra");
+		tmp.dodaj("c",  true);
+		tmp.dodaj("b", 88);
+		tmp.dodaj("a", "abrakadabra");
+		tmp.dodaj("c",  true);
+		tmp.dodaj("c",  false);
+		tmp.dodaj("b", 111);
+		tmp.dodaj("c",  false);
+		tmp.dodaj("b", 112);
 		System.out.println(tmp.outer);
 		System.out.println(tmp.iloc(2,4).outer);
 		Object x = "abrakadabra";
