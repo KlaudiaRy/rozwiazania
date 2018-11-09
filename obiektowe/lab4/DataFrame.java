@@ -14,6 +14,8 @@ public class DataFrame {
     //String[] lista_typow;
     ArrayList<ArrayList<Value>> outer;
     ArrayList kolumna;
+    
+    LinkedList<DataFrame> lista = null;
 
 	
     public void DataFrame(String[] lista_nazw, Class<? extends Value>[]lista_typow) {
@@ -281,6 +283,16 @@ public class DataFrame {
 	 
 		    public DataFrame apply (Applyable a) {
 		    	DataFrame wynik = this.copyStructure();
+		    	for (int i = 0; i<= this.lista.size();i++) {
+		    		DataFrame df = this.lista.get(i);
+		    		DataFrame nowa = a.apply(df);
+			    	if (nowa.size() > 0) {
+			    		for (int j=0;j<nowa.size();j++) {
+			    			Value[] x = nowa.wiersz(j);
+			    			wynik.dodaj2(x);
+			    		}
+			    	}
+		    	}
 		    	return wynik;
 		    }
 		    
@@ -288,10 +300,10 @@ public class DataFrame {
 		    	return new DataFrame(this.lista_nazw,this.lista_typow);
 		    }
 		    
-		    public ArrayList<DataFrame> groupby(String nazwa) {
+		    public LinkedList<DataFrame> groupby(String nazwa) {
 		    	//LinkedList<DataFrame> lista;
-		    	ArrayList<DataFrame> lista;
-		    	lista = new ArrayList<DataFrame>();
+		    	LinkedList<DataFrame> lista;
+		    	lista = new LinkedList<DataFrame>();
 		    	ArrayList<Value> po;
 		    	po=null;
 		    	DataFrame dfx = new DataFrame(lista_nazw,lista_typow);
@@ -325,12 +337,12 @@ public class DataFrame {
 		    	}
 		    	
 		    	}
-		    	
+		    	this.lista=lista;
 		    	return lista;
 		    }
 		    
 		    
-		    class MojaGrupa{
+		    class MojaGrupa{// implements Groupby{
 		    	private LinkedList<DataFrame>lista;
 		    	private String[] nazwy_kolumn;
 		    	//Class<? extends Value>[] typy_kolumn;
